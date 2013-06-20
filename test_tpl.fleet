@@ -1,0 +1,8 @@
+<p><(str title)></p>
+<p><(raw "\\Buy 13\" laptop!")>\</p>
+<p><(post :body)></p>
+<ul class="tags">
+  <(for [tag (post :tags)] ">
+    <li><(str tag)></li>
+  <")>
+</ul>
