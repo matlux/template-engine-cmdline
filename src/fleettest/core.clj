@@ -4,7 +4,7 @@
 (defmacro fileet
   "Convinient way to define test templates"
   [args filename]
-  `(fleet ~args (slurp (str "./" ~filename ".fleet")) {:escaping :xml}))
+  `(fleet ~args (slurp (str "./" ~filename ".fleet")) {:escaping :bypass}))
 
 
 (def test-posts
@@ -18,4 +18,4 @@
 (defn -main
   "I don't do a whole lot."
   [x]
-  (println ((fileet [post title] "./test_tpl") test-post "Post Template")))
+  (println ((fileet [post title] "./test.txt") test-post "Post Template")))
