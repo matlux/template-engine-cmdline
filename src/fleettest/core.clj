@@ -1,21 +1,34 @@
 (ns fleettest.core
   (:use fleet))
 
+
+
 (defmacro fileet
   "Convinient way to define test templates"
   [args filename]
-  `(fleet ~args (slurp (str "./" ~filename ".fleet")) {:escaping :bypass}))
+  `(fleet ~args (slurp (str "./" ~filename ".fleet")) {:escaping :xml}))
 
 
-(def test-posts
-  [{:body "First Post"  :tags ["tag1" "tag2" "tag3"]},
-   {:body "Second Post" :tags ["tag1" "tag2"]}])
+(defn write-file
+  "Writes a value to a file"
+  [value out-file]
+  (spit out-file "" :append false)
+  (with-open [out-data (clojure.java.io/writer out-file)]
+      (.write out-data (str value))))
 
-(def test-post
-  (first test-posts))
+(defn read-file [in-file]
+  (with-open [rdr (clojure.java.io/reader in-file)]
+    (reduce conj [] (line-seq rdr))))
+
+
+
+
+
 
 
 (defn -main
   "I don't do a whole lot."
   [x]
-  (println ((fileet [post title] "./test.txt") test-post "Post Template")))
+  (let [test-posts (read-string (apply str (read-file "./env.json")))]
+    (println x test-posts)
+   (write-file ((fileet [post title] "./test.txt") (first test-posts) "Post Template") "./test.txt")))
