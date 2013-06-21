@@ -28,7 +28,7 @@
 
 (defn -main
   "I don't do a whole lot."
-  [x]
-  (let [test-posts (read-string (apply str (read-file "./env.json")))]
-    (println x test-posts)
-   (write-file ((fileet [post title] "./test.txt") (first test-posts) "Post Template") "./test.txt")))
+  [templatefile instancefile envfile env]
+  (let [test-posts (read-string (apply str (read-file envfile)))]
+    (println test-posts)
+    (write-file ((fileet [node title] templatefile) test-posts env) instancefile)))
