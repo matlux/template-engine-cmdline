@@ -1,4 +1,5 @@
 (ns fleettest.core
+  (:require [clojure.data.json :as json]
   (:use fleet))
 
 
@@ -29,13 +30,30 @@
     (reduce conj [] (line-seq rdr))))
 
 
-(defn instantiate-template-from-file
+(defn instantiate-template-from-clojure-file
   "instantiate a Fleet template."
   [^String templatefile ^String instancefile ^String envfile ^String env]
   (let [sub-map (read-string (apply str (read-file envfile)))]
     (println sub-map)
     (write-file ((fleet [? env] (slurp (str templatefile)) {:escaping :xml}) sub-map env) instancefile)))
-                    
+
+(defmacro --> [m firstkey & keys]
+  (let [a (map #(list 'get %) keys)]
+    `(-> (~m ~firstkey ) ~@a)))
+
+
+(defn load-json [^String envfile ^java.util.Map sub-map]
+  (merge (json/read-str  (apply str (read-file envfile))) sub-map))
+
+(defn instantiate-template-from-file
+  "instantiate a Fleet template."
+  [^String templatefile ^String instancefile ^String envfile ^java.util.Map sub-map2]
+  (let [sub-map (merge (json/read-str  (apply str (read-file envfile))) sub-map2)]  ;; :key-fn keyword
+    (println sub-map )
+    (write-file ((fleet [?] (slurp (str templatefile)) {:escaping :xml}) sub-map) instancefile)
+    sub-map
+    ))
+
 (defn instantiate-template
   "instantiate a Fleet template."
   [^String templatefile ^String instancefile ^java.util.Map sub-map]
